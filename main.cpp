@@ -31,5 +31,42 @@ int main(int argc, char**argv)
 	dumpVector("v2", v2);
 	dumpVector("v3", v3);
 
+	asm(
+		"vld1.32 {d0, d1}, [%3] \n\t"
+		"vld1.32 {d2, d3}, [%4] \n\t"
+		"vld1.32 {d4, d5}, [%5] \n\t"
+		"vld1.32 {d6, d7}, [%6] \n\t"
+		"vtrn.32 q0,q1          \n\t" // ZZR0G0B0 ZZR1G1B1 -> R1R0B1B0 ZZZZG1G0 ; d1 d0 d3 d2
+		"vtrn.32 q2,q3          \n\t" // ZZR2G2B2 ZZR3G3B3 -> R3R2B3B2 ZZZZG3G2 ; d5 d4 d7 d6
+		"vswp d1,d4             \n\t" // R1R0B1B0 R3R2B3B2 -> B3B2B1B0 R3R2R1R0 ; d1 d0 d5 d4
+		"vswp d3,d6             \n\t" // ZZZZG1G0 ZZZZG3G2 -> G3G2G1G0 ZZZZZZZZ ; d3 d2 d7 d6
+		"vswp %q0,q0            \n\t" // ZZZZG1G0 ZZZZG3G2 -> G3G2G1G0 ZZZZZZZZ ; d3 d2 d7 d6
+		"vswp %q1,q1            \n\t" // ZZZZG1G0 ZZZZG3G2 -> G3G2G1G0 ZZZZZZZZ ; d3 d2 d7 d6
+		"vswp %q2,q2            \n\t" // ZZZZG1G0 ZZZZG3G2 -> G3G2G1G0 ZZZZZZZZ ; d3 d2 d7 d6
+		:"=w"(v0), "=w"(v1), "=w"(v2)
+		:"r"(i0), "r"(i1), "r"(i2), "r"(i3)
+		:"q0", "q1", "q2", "q3"
+	);
+	//asm(
+	//	"vld1.32 {d0, d1}, [%3] \n\t"
+	//	"vld1.32 {d2, d3}, [%4] \n\t"
+	//	"vld1.32 {d4, d5}, [%5] \n\t"
+	//	"vld1.32 {d6, d7}, [%6] \n\t"
+	//	"vtrn.32 q0,q1          \n\t" // ZZR0G0B0 ZZR1G1B1 -> R1R0B1B0 ZZZZG1G0 ; d1 d0 d3 d2
+	//	"vtrn.32 q2,q3          \n\t" // ZZR2G2B2 ZZR3G3B3 -> R3R2B3B2 ZZZZG3G2 ; d5 d4 d7 d6
+	//	"vswp d1,d4             \n\t" // R1R0B1B0 R3R2B3B2 -> B3B2B1B0 R3R2R1R0 ; d1 d0 d5 d4
+	//	"vswp d3,d6             \n\t" // ZZZZG1G0 ZZZZG3G2 -> G3G2G1G0 ZZZZZZZZ ; d3 d2 d7 d6
+	//	"vmov %0 q0             \n\t"
+	//	"vmov %1 q1             \n\t"
+	//	"vmov %2 q2             \n\t"
+	//	:"=r"(v0), "=r"(v1), "=r"(v2)
+	//	:"r"(i0), "r"(i1), "r"(i2), "r"(i3)
+	//	:"q0", "q1", "q2", "q3"
+	//);
+
+	dumpVector("v0", v0);
+	dumpVector("v1", v1);
+	dumpVector("v2", v2);
+
 	return 0;
 }
