@@ -1,5 +1,6 @@
 #include <arm_neon.h>
 #include <iostream>
+#include "inlineTranspose.hpp"
 
 void dumpVector( const char* message, float32x4_t a )
 {
@@ -31,13 +32,7 @@ int main(int argc, char**argv)
 	dumpVector("v2", v2);
 	dumpVector("v3", v3);
 
-	float32x4x2_t v01 = vtrnq_f32(v0, v1);
-	float32x4x2_t v23 = vtrnq_f32(v2, v3);
-	
-	v0 = vcombine_f32(vget_low_f32(v01.val[0]),  vget_low_f32(v23.val[0]));
-	v1 = vcombine_f32(vget_low_f32(v01.val[1]),  vget_low_f32(v23.val[1]));
-	v2 = vcombine_f32(vget_high_f32(v01.val[0]), vget_high_f32(v23.val[0]));
-	v3 = vcombine_f32(vget_high_f32(v01.val[1]), vget_high_f32(v23.val[1]));
+	transpose4x4( v0, v1, v2, v3 );
 
 	dumpVector("v0", v0);
 	dumpVector("v1", v1);
